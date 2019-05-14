@@ -43,10 +43,11 @@ function setProd(prod) {
 
 // eslint-disable-next-line no-unused-vars
 function runProgram() {
+  //teste para descobrir o tipo de gramática
   let [gr, glc, gsc, gi] = new Array(4).fill(true);
 
   let prod = $('#prod').val();
-  prod = prod.replace(/\s/g, '');
+  prod = prod.replace(/ /g, '');
   let linhas = prod.split('\n');
   let esquerda = [];
   let direita = [];
@@ -67,24 +68,28 @@ function runProgram() {
     glc = false;
   }
 
-  for (const iterator of esquerda) {
-    if (iterator.length > 1) {
-      gr = false;
-      glc = false;
+  for (const key in esquerda) {
+    for (const iterator of esquerda[key]) {
+      if (iterator.length > 1) {
+        gr = false;
+        glc = false;
+      }
     }
   }
 
   for (const iter of dirSimbolo) {
     for (const key in iter) {
-      if (/[a-z]/g.test(iter.charAt(key))) {
-        if (
-          !(
-            /[a-z]/g.test(iter.charAt(key)) &&
-            /[A-Z]/g.test(iter.charAt(key + 1))
-          )
-        ) {
-          gr = false;
-        }
+      if (
+        /[A-Z]/g.test(iter.charAt(key)) &&
+        !/[a-z]/g.test(iter.charAt(key - 1))
+      ) {
+        gr = false;
+      } else if (
+        /[a-z]/g.test(iter.charAt(key)) &&
+        iter.charAt(key + 1) == '' &&
+        iter.charAt(key - 1) != ''
+      ) {
+        gr = false;
       }
     }
     if (iter.includes('&')) {
@@ -129,4 +134,35 @@ function runProgram() {
     $('#typeGram').css('color', 'red');
   }
 
+  // fim teste para o tipo de gramática
+
+  let inicio = $('#si').val();
+  let sentenca = inicio;
+  for (const key in linhas) {
+    for (const i of esquerda[key]) {
+      if (i == inicio) {
+        criaSentenca(i, direita[key], i);
+        break;
+      }
+    }
+  }
+  console.log(sentenca);
+
+  function criaSentenca(nt, t, anterior) {
+    let aux = t.split('|');
+    let limit = aux.length;
+    let randT = aux[Math.floor(Math.random() * limit)];
+    let nova = anterior.replace(nt, randT);
+    sentenca = sentenca + '→' + nova;
+    if (/[A-Z]/g.test(nova)) {
+      let NT = [];
+      for (const key in esquerda) {
+        if (nova.includes(esquerda[key])) {
+          NT.push(key);
+        }
+      }
+      let rand = Math.floor(Math.random() * NT.length);
+      criaSentenca(esquerda[NT[rand]], direita[NT[rand]], nova);
+    }
+  }
 }
