@@ -26,10 +26,8 @@ function setTer(ter) {
 }
 
 function setSI(si) {
-  let aux = $('#nter').val();
-  if (aux.includes(si)) {
-    $('#s1').html(si);
-  }
+  $('#s1').html(si);
+  $('#si').val(si);
 }
 
 function setProd(prod) {
@@ -138,31 +136,42 @@ function runProgram() {
 
   let inicio = $('#si').val();
   let sentenca = inicio;
+  let sentencas = '';
   for (const key in linhas) {
-    for (const i of esquerda[key]) {
-      if (i == inicio) {
-        criaSentenca(i, direita[key], i);
-        break;
+    if (esquerda[key] == inicio) {
+      for (let a = 0; a < 3; a++) {
+        criaSentenca(esquerda[key], direita[key], esquerda[key]);
+        sentencas = sentencas + sentenca + '<br>';
+        console.log(sentenca);
+        sentenca = inicio;
       }
+      sentencas = `Senteças Geradas = { <br />
+          ${sentencas}
+          }`;
+      $('.resultGramaticas').html(sentencas);
+      break;
     }
   }
-  console.log(sentenca);
 
   function criaSentenca(nt, t, anterior) {
     let aux = t.split('|');
     let limit = aux.length;
     let randT = aux[Math.floor(Math.random() * limit)];
     let nova = anterior.replace(nt, randT);
-    sentenca = sentenca + '→' + nova;
-    if (/[A-Z]/g.test(nova)) {
-      let NT = [];
-      for (const key in esquerda) {
-        if (nova.includes(esquerda[key])) {
-          NT.push(key);
+    sentenca = sentenca + ' → ' + nova;
+    try {
+      if (/[A-Z]/g.test(nova)) {
+        let NT = [];
+        for (const key in esquerda) {
+          if (nova.includes(esquerda[key])) {
+            NT.push(key);
+          }
         }
+        let rand = Math.floor(Math.random() * NT.length);
+        criaSentenca(esquerda[NT[rand]], direita[NT[rand]], nova);
       }
-      let rand = Math.floor(Math.random() * NT.length);
-      criaSentenca(esquerda[NT[rand]], direita[NT[rand]], nova);
+    } catch (e) {
+      alert('Erro na produção: Loop infinito');
     }
   }
 }

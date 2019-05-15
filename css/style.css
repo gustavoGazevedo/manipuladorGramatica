@@ -52,9 +52,9 @@ hr {
     font-weight: bold;
     color: rgba(0, 0, 0, 0.712);
     text-align: left;
-    background-color: #fff;
+    background-color: #fff !important;
     background-clip: padding-box;
-    border: 1px solid #ced4da;
+    border: 1px solid #ced4da !important;
     border-radius: .25rem;
     transition: border-color .15s ease-in-out, box-shadow .15s ease-in-out;
     padding: .375rem .75rem;
@@ -66,6 +66,16 @@ hr {
     align-self: flex-end;
     resize: none;
     margin: 2px;
+}
+
+.form-control:disabled, .form-control[readonly] {
+    background-color: #fff;
+    opacity: 1;
+}
+
+.form-control:disabled {
+    background-color: #e9ecef;
+    opacity: 1;
 }
 
 var {
@@ -90,4 +100,13 @@ button:hover {
     vertical-align: middle;
     line-height: 2;
     color: #212529;
+}
+
+.resultGramaticas {
+    overflow: scroll;
+    white-space: nowrap;
+}
+
+#gram1 {
+    margin-bottom: 0;
 }
