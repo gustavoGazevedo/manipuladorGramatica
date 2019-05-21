@@ -170,6 +170,8 @@ function runProgram() {
         if (NT.length != 0) {
           let rand = Math.floor(Math.random() * NT.length);
           criaSentenca(esquerda[NT[rand]], direita[NT[rand]], nova);
+        } else {
+          alert('Erro na produção: Não possui fim');
         }
       }
     } catch (e) {
@@ -178,11 +180,33 @@ function runProgram() {
   }
 
   // Automato Finito
-  let tableHead = `<tr><th scope="col">#</th>`;
-  for (const i of dirSimbolo) {
-    tableHead += `<th scope="col">${i}</th>`
+  if (gr) {
+    $('#tabela').show();
+    let tableHead = `<tr><th scope="col">#</th>`;
+    let tableBody = `<tr>`;
+    for (const i of dirSimbolo) {
+      tableHead += `<th scope="col">${i}</th>`;
+    }
+    for (const i of linhas) {
+      tableBody += `<th scope="row">${i.split('>')[0]}</th>`
+      for (const a of dirSimbolo) {
+        let regex = new RegExp(`${a}\\b`, 'g');
+        if (regex.test(i)) {
+          if(/[A-Z]/g.test(a)) {
+            let aux = a.replace(/[a-z]/g, '').replace(/(?!^)(?!$)/g, '/')
+            tableBody += `<td>${aux}</td>`
+          } else {
+            tableBody += `<td>ε</td>`
+          }
+        } else {
+          tableBody += `<td>-</td>`
+        }
+      }
+      tableBody += `</tr>`
+    }
+    tableHead += `</tr>`;
+    $('#tableHead').html(tableHead);
+    $('#tableBody').html(tableBody);
+
   }
-  tableHead += `</tr>`
-  $('#tableHead').html(tableHead);
-  
 }
