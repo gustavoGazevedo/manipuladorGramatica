@@ -23,11 +23,11 @@
             oninput="this.value = this.value.toUpperCase(); setNT(this.value)" id="nter" /><br />
           <input type="text" class="form-control" placeholder="terminais"
             oninput="this.value = this.value.toLowerCase(); setTer(this.value)" id="ter" /><br />
-          <textarea type="text" onblur="$('#si').prop('disabled', false);" oninput="setProd(this.value)" class="form-control" placeholder="produção"
-            id="prod"></textarea><br />
+          <textarea type="text" onblur="$('#si').prop('disabled', false);" oninput="setProd(this.value)"
+            class="form-control" placeholder="produção" id="prod"></textarea><br />
           <div role="group">
-            <input id="si" class="form-control" data-toggle="dropdown"
-              aria-haspopup="true" onclick="testSI()" aria-expanded="false" disabled readonly placeholder="símbolo inicial">
+            <input id="si" class="form-control" data-toggle="dropdown" aria-haspopup="true" onclick="testSI()"
+              aria-expanded="false" disabled readonly placeholder="símbolo inicial">
             </input>
             <div class="dropdown-menu" aria-labelledby="si">
             </div>
@@ -65,6 +65,38 @@
           <br>
           }
         </p>
+      </div>
+      <div class="col-6">
+        <table class="table table-sm">
+          <thead id="tableHead">
+            <tr>
+              <th scope="col">#</th>
+              <th scope="col">First</th>
+              <th scope="col">Last</th>
+              <th scope="col">Handle</th>
+            </tr>
+          </thead>
+          <tbody id="tableBody">
+            <tr>
+              <th scope="row">1</th>
+              <td>Mark</td>
+              <td>Otto</td>
+              <td>@mdo</td>
+            </tr>
+            <tr>
+              <th scope="row">2</th>
+              <td>Jacob</td>
+              <td>Thornton</td>
+              <td>@fat</td>
+            </tr>
+            <tr>
+              <th scope="row">3</th>
+              <td>Larry</td>
+              <td>the Bird</td>
+              <td>@twitter</td>
+            </tr>
+          </tbody>
+        </table>
       </div>
     </div>
   </div>

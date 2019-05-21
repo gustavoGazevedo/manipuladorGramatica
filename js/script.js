@@ -141,8 +141,8 @@ function runProgram() {
     if (esquerda[key] == inicio) {
       for (let a = 0; a < 3; a++) {
         criaSentenca(esquerda[key], direita[key], esquerda[key]);
+        sentenca.replace(/&/g, '');
         sentencas = sentencas + sentenca + '<br>';
-        console.log(sentenca);
         sentenca = inicio;
       }
       sentencas = `Senteças Geradas = { <br />
@@ -167,11 +167,22 @@ function runProgram() {
             NT.push(key);
           }
         }
-        let rand = Math.floor(Math.random() * NT.length);
-        criaSentenca(esquerda[NT[rand]], direita[NT[rand]], nova);
+        if (NT.length != 0) {
+          let rand = Math.floor(Math.random() * NT.length);
+          criaSentenca(esquerda[NT[rand]], direita[NT[rand]], nova);
+        }
       }
     } catch (e) {
       alert('Erro na produção: Loop infinito');
     }
   }
+
+  // Automato Finito
+  let tableHead = `<tr><th scope="col">#</th>`;
+  for (const i of dirSimbolo) {
+    tableHead += `<th scope="col">${i}</th>`
+  }
+  tableHead += `</tr>`
+  $('#tableHead').html(tableHead);
+  
 }
