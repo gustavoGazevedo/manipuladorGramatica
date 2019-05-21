@@ -161,7 +161,8 @@ function runProgram() {
     if (esquerda[key] == inicio) {
       //Repete o processo três vezes
       for (let a = 0; a < 3; a++) {
-        //Lança a função para criar a sentença com os dados (inicio, opções da direita do inicio, sentença anterior)
+        //Lança a função para criar a sentença com 
+        //os dados (inicio, opções da direita do inicio, sentença anterior)
         criaSentenca(esquerda[key], direita[key], esquerda[key]);
         sentenca.replace(/&/g, ''); //Retira o vazio
         sentencas = sentencas + sentenca + '<br>'; //Concatena as sentenças geradas
