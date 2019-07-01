@@ -161,18 +161,23 @@ function runProgram() {
     if (esquerda[key] == inicio) {
       //Repete o processo três vezes
       for (let a = 0; a < 3; a++) {
-        //Lança a função para criar a sentença com 
+        //Lança a função para criar a sentença com
         //os dados (inicio, opções da direita do inicio, sentença anterior)
         criaSentenca(esquerda[key], direita[key], esquerda[key]);
-        sentenca.replace(/&/g, ''); //Retira o vazio
-        sentencas = sentencas + sentenca + '<br>'; //Concatena as sentenças geradas
+        sentencas =
+          sentencas +
+          sentenca.replace(
+            /→([^→]+)→?$/g,
+            sentenca.substr(sentenca.lastIndexOf('→')).replace(/&/g, '') //retira o vazio no final
+          ) +
+          '<br>'; //Concatena as sentenças geradas
         sentenca = inicio; //re-inicia o loop
       }
       //escreve na tela a resposta
-      sentencas = `Senteças Geradas = { <br />
+      sentencas = `Sentenças Geradas = { <br />
           ${sentencas}
           }`;
-      $('.resultGramaticas').html(sentencas);
+      $('#sentencaGeradas').html(sentencas);
       break;
     }
   }
@@ -241,5 +246,301 @@ function runProgram() {
     $('#tableBody').html(tableBody);
   } else {
     $('#tabela').hide();
+  }
+
+  if (glc) {
+    let novaProducao = {};
+    let inuteis = false,
+      unitarios = false,
+      eLivre = false,
+      fatoracao = false,
+      recurcao = false;
+
+    for (const key of linhas) {
+      let aux = key.split('>');
+      let aws = aux[1].split('|');
+      let dirAux = [];
+      for (const i of aws) {
+        dirAux.push(i);
+      }
+      novaProducao[novaProducao.length] = {
+        direita: dirAux,
+        esquerda: aux[0]
+      };
+    }
+
+    //retirando Símbolos inúteis
+    for (let index = novaProducao; index >= 0; index--) {
+      let aux = novaProducao[index];
+      let element = aux.esquerda;
+      //se for somente um que aponta para si mesmo, retira e limpa dos outros
+      if (aux.length == 1 && aux.direita[0].includes(element)) {
+        inuteis = true;
+        delete novaProducao[index];
+        for (const x in novaProducao) {
+          let aws = novaProducao[x];
+          for (const key in aws.direita) {
+            if (aws.direita[key].includes(element)) {
+              delete aws.direita[key];
+            }
+          }
+        }
+      }
+      // se não for o começo e não tiver como entrar nele por outro, retira
+      if (element != inicio) {
+        let test = true;
+        for (const x in novaProducao) {
+          let aws = novaProducao[x];
+          if (!aws.esquerda == element) {
+            for (const key in aws.direita) {
+              if (aws.direita[key].includes(element)) {
+                test = false;
+              }
+            }
+          }
+        }
+        if (test) {
+          inuteis = true;
+          delete novaProducao[index];
+        }
+      }
+    }
+    if (inuteis) {
+      let text = '';
+      for (const element in novaProducao) {
+        text += novaProducao[element].esquerda + ' > ';
+        for (const key in novaProducao[element].direita) {
+          if (key < novaProducao[element].direita.length) {
+            text += novaProducao[element].direita[key] + ' | ';
+          } else {
+            text += novaProducao[element].direita[key];
+          }
+        }
+        text += '<br />';
+      }
+      text = `Símbolos inúteis = { <br />
+        ${text}
+        }`;
+      $('#inuteis').html(text);
+    } else {
+      let text = `Símbolos inúteis = { <br />
+        Não existiam símbolos inúteis. <br />
+        }`;
+      $('#inuteis').html(text);
+    }
+
+    //realizando e-livre
+    for (const x in novaProducao) {
+      let aws = novaProducao[x];
+      for (const key in aws.direita) {
+        if (aws.direita[key].includes('&')) {
+          eLivre = true;
+          delete aws.direita[key];
+          let regex = new RegExp(`\\b${aws.esquerda}\\b`, 'g');
+          for (const y in aws.direita) {
+            aws.direita.push(aws.direita[y].replace(regex, ''));
+          }
+          for (const y in novaProducao) {
+            if (!aws.esquerda == novaProducao[y].esquerda) {
+              for (const a in novaProducao[y].direita) {
+                if (novaProducao[y].direita[a].includes(aws.esquerda)) {
+                  novaProducao[y].direita.push(
+                    novaProducao[y].direita[a].replace(regex, '')
+                  );
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+    if (eLivre) {
+      let text = '';
+      for (const element in novaProducao) {
+        text += novaProducao[element].esquerda + ' > ';
+        for (const key in novaProducao[element].direita) {
+          if (key < novaProducao[element].direita.length) {
+            text += novaProducao[element].direita[key] + ' | ';
+          } else {
+            text += novaProducao[element].direita[key];
+          }
+        }
+        text += '<br />';
+      }
+      text = `ε-livre = { <br />
+        ${text}
+        }`;
+      $('#eLivres').html(text);
+    } else {
+      let text = `ε-livre = { <br />
+        Não existiam ε. <br />
+        }`;
+      $('#eLivres').html(text);
+    }
+
+    //substitui unitarios pela produção dele
+    for (let index = novaProducao; index >= 0; index--) {
+      let aux = novaProducao[index];
+      for (const key in aux.direita) {
+        if (/^[A-Z]$/g.test(aux.direita[key])) {
+          unitarios = true;
+          let aws = aux.direita[key];
+          delete aux.direita[key];
+          for (const x in novaProducao) {
+            if (novaProducao[x].esquerda == aws) {
+              for (const y in novaProducao[x].direita) {
+                aux.direita.push(novaProducao[x].direita[y]);
+              }
+            }
+          }
+        }
+      }
+    }
+    if (unitarios) {
+      let text = '';
+      for (const element in novaProducao) {
+        text += novaProducao[element].esquerda + ' > ';
+        for (const key in novaProducao[element].direita) {
+          if (key < novaProducao[element].direita.length) {
+            text += novaProducao[element].direita[key] + ' | ';
+          } else {
+            text += novaProducao[element].direita[key];
+          }
+        }
+        text += '<br />';
+      }
+      text = `Produção Unitária = { <br />
+        ${text}
+        }`;
+      $('#unitarios').html(text);
+    } else {
+      let text = `Produção Unitária = { <br />
+        Não existiam produções unitárias. <br />
+        }`;
+      $('#unitarios').html(text);
+    }
+
+    //testa se necessita refatoração, se precisar, cria uma nova produção e substitue na antiga
+    for (const x in novaProducao) {
+      let aws = novaProducao[x];
+      for (const key in aws.direita) {
+        for (const y in aws.direita) {
+          if (!key == y) {
+            if (
+              aws.direita[y].replace(/[A-Z]/g, ' ') ==
+              aws.direita[key].replace(/[A-Z]/g, ' ')
+            ) {
+              fatoracao = true;
+              let aux = [];
+              for (const a in aws.direita) {
+                if (
+                  aws.direita[y].replace(/[A-Z]/g, ' ') ==
+                  aws.direita[a].replace(/[A-Z]/g, ' ')
+                ) {
+                  aux.push(aws.direita[a].replace(/[a-z]/g, ''));
+                  aws.direita[a] = aws.direita[a].replace(
+                    /[A-Z]/g,
+                    `${aws.esquerda}'`
+                  );
+                }
+              }
+              if (aux.length == 1) {
+                aux.push('ε');
+              }
+              novaProducao[novaProducao.length] = {
+                direita: `${aws.esquerda}'`,
+                esquerda: aux
+              };
+            }
+          }
+        }
+      }
+    }
+    if (fatoracao) {
+      let text = '';
+      for (const element in novaProducao) {
+        text += novaProducao[element].esquerda + ' > ';
+        for (const key in novaProducao[element].direita) {
+          if (key < novaProducao[element].direita.length) {
+            text += novaProducao[element].direita[key] + ' | ';
+          } else {
+            text += novaProducao[element].direita[key];
+          }
+        }
+        text += '<br />';
+      }
+      text = `Fatoração = { <br />
+        ${text}
+        }`;
+      $('#fatoracao').html(text);
+    } else {
+      let text = `Fatoração = { <br />
+        Não necessitou fatoração. <br />
+        }`;
+      $('#fatoracao').html(text);
+    }
+
+    for (const x in novaProducao) {
+      let aws = novaProducao[x];
+      for (const key in aws.direita) {
+        if (aws.esquerda == aws.direita[key].substring(0, 1)) {
+          recurcao = true;
+          novaProducao[novaProducao.length] = {
+            esquerda: `${aws.esquerda}'`,
+            direita: [
+              aws.direita[key].substring(1),
+              aws.direita[key].substring(1) + `${aws.esquerda}'`
+            ]
+          };
+          delete aws.direita[key];
+          for (const y in aws.direita) {
+            aws.direita[y] = aws.direita[y] + `${aws.esquerda}'`;
+          }
+        }
+      }
+    }
+    if (recurcao) {
+      let text = '';
+      for (const element in novaProducao) {
+        text += novaProducao[element].esquerda + ' > ';
+        for (const key in novaProducao[element].direita) {
+          if (key < novaProducao[element].direita.length) {
+            text += novaProducao[element].direita[key] + ' | ';
+          } else {
+            text += novaProducao[element].direita[key];
+          }
+        }
+        text += '<br />';
+      }
+      text = `Recursão à esquerda = { <br />
+        ${text}
+        }`;
+      $('#recurcao').html(text);
+    } else {
+      let text = `Recursão à esquerda = { <br />
+        Não necessitou recursão à esquerda. <br />
+        }`;
+      $('#recurcao').html(text);
+    }
+    
+    let text = '';
+      for (const element in novaProducao) {
+        text += novaProducao[element].esquerda + ' > ';
+        for (const key in novaProducao[element].direita) {
+          if (key < novaProducao[element].direita.length) {
+            text += novaProducao[element].direita[key] + ' | ';
+          } else {
+            text += novaProducao[element].direita[key];
+          }
+        }
+        text += '<br />';
+      }
+      text = `Final = { <br />
+        ${text}
+        }`;
+      $('#final').html(text);
+
+    $('#glcHr').attr('hidden', false);
+    $('#glcDiv').attr('hidden', false);
   }
 }

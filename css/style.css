@@ -124,3 +124,18 @@ button:hover {
 #gram1 {
     margin-bottom: 0;
 }
+
+.transformaGlc {
+    margin-top: 1.5rem;
+    display: block;
+    font-size: 1rem;
+    font-weight: bold;
+    color: rgba(0, 0, 0, 0.712);
+    text-align: left;
+    background-color: #fff !important;
+    background-clip: padding-box;
+    border: 1px solid #ced4da !important;
+    border-radius: .25rem;
+    transition: border-color .15s ease-in-out, box-shadow .15s ease-in-out;
+    padding: .375rem .75rem;
+}
