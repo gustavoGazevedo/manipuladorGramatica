@@ -329,6 +329,7 @@ function inuteis() {
 }
 
 function recurcao() {
+  //pega a ultima entrada da produção para pegar o numero de linhas
   let rec = novaProducao[Object.keys(novaProducao).length - 1].esquerda.substring(1) + "'";
   for (const x in novaProducao) {
     let aws = novaProducao[x];
@@ -471,7 +472,7 @@ function fatoracao() {
                   }
                 }
               }
-              aux = aux.filter(Boolean);
+              aux = aux.filter(Boolean); //retira vazios
               if (aux.length == 1) {
                 aux.push('&');
               }
@@ -496,10 +497,20 @@ function fatoracao() {
 }
 
 function escreveNovaProd() {
+  let test = [];
+  for (const x in novaProducao) {
+    let aws = novaProducao[x].esquerda + '>' + novaProducao[x].direita.join();
+    if (!test.includes(aws)) {
+      test.push(novaProducao[x].esquerda + '>' + novaProducao[x].direita.join());
+    } else {
+      delete novaProducao[x];
+    }
+  }
   let text = '';
   for (const element in novaProducao) {
     text += novaProducao[element].esquerda + ' > ';
     novaProducao[element].direita = novaProducao[element].direita.filter(Boolean);
+    novaProducao[element].direita = [...new Set(novaProducao[element].direita.map(item => item))]
     for (const key in novaProducao[element].direita) {
       if (key < novaProducao[element].direita.length - 1) {
         text += novaProducao[element].direita[key] + ' | ';
