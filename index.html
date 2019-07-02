@@ -36,6 +36,10 @@
           </div>
           }
         </p>
+        <input class="form-check-input col-2" onclick="somenteTransGLC = !somenteTransGLC;" type="checkbox" id="defaultCheck1">
+        <label class="form-check-label offset-1" for="defaultCheck1">
+          Somente transformação GLC
+        </label>
       </div>
       <div class="col-6">
         <p class id="gramVizual">
@@ -81,40 +85,26 @@
       </div>
     </div>
     <hr id="glcHr" hidden>
-    <div class="row" id="glcDiv" hidden>
-      <div class="col">
-        <p class="resultGramaticas transformaGlc" class id="inuteis">
-          Símbolos inúteis = { <br />
-          <br>
-          }
-        </p>
-        <p class="resultGramaticas transformaGlc" class id="eLivre">
-          ε-livre = { <br />
-          <br>
-          }
-        </p>
-        <p class="resultGramaticas transformaGlc" class id="unitarios">
-          Produção Unitária = { <br />
-          <br>
-          }
-        </p>
-        <p class="resultGramaticas transformaGlc" class id="fatoracao">
-          Fatoração = { <br />
-          <br>
-          }
-        </p>
-        <p class="resultGramaticas transformaGlc" class id="recurcao">
-          Recursão à esquerda = { <br />
-          <br>
-          }
-        </p>
-        <p class="resultGramaticas transformaGlc" class id="final">
-          Final = { <br />
-          <br>
-          }
-        </p>
+    <div id="glcDiv" hidden>
+      <div class="row">
+        <button type="button" onclick="inuteis()" class="btn offset-1 col-2 btn-default">Inúteis</button>
+        <button type="button" onclick="recurcao()" class="btn col-2 btn-default">Recurção a Esquerda</button>
+        <button type="button" onclick="eLivre()" class="btn col-2 btn-default">ε-Livre</button>
+        <button type="button" onclick="unitarios()" class="btn col-2 btn-default">Unitários</button>
+        <button type="button" onclick="fatoracao()" class="btn col-2 btn-default">Fatoração</button>
+      </div>
+      <div class="row">
+        <div class="col" id="producoes">
+        </div>
       </div>
     </div>
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
   </div>
 
   <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
