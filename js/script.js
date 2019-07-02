@@ -329,13 +329,13 @@ function inuteis() {
 }
 
 function recurcao() {
-  let rec = "'";
+  let rec = novaProducao[Object.keys(novaProducao).length - 1].esquerda.substring(1) + "'";
   for (const x in novaProducao) {
     let aws = novaProducao[x];
     for (const key in aws.direita) {
       if (aws.esquerda == aws.direita[key].substring(0, 1)) {
         novaProducao[Object.keys(novaProducao).length] = {
-          esquerda: `${aws.esquerda}'`,
+          esquerda: `${aws.esquerda + rec}`,
           direita: [
             aws.direita[key].substring(1),
             aws.direita[key].substring(1) + `${aws.esquerda + rec}`
@@ -403,6 +403,7 @@ function unitarios() {
 
 function fatoracao() {
   //testa se necessita refatoração, se precisar, cria uma nova produção e substitue na antiga
+  let rec = novaProducao[Object.keys(novaProducao).length - 1].esquerda.substring(1) + "'";
   for (const x in novaProducao) {
     let aws = novaProducao[x];
     let aux2 = [];
@@ -421,7 +422,7 @@ function fatoracao() {
                       aux.push(aws.direita[y].replace(/[a-z]/g, ''));
                       aws.direita[y] = aws.direita[y].replace(
                         /[A-Z]/g,
-                        `${aws.esquerda}'`
+                        `${aws.esquerda + rec}`
                       );
 
                       aux2.push(key);
@@ -435,9 +436,10 @@ function fatoracao() {
               }
               if (aux.length != 0) {
                 novaProducao[Object.keys(novaProducao).length] = {
-                  esquerda: `${aws.esquerda}'`,
+                  esquerda: `${aws.esquerda + rec}`,
                   direita: aux
                 };
+                rec += "'";
               }
             }
           } else if (/[A-Z]/g.test(aws.direita[key])) {
@@ -457,11 +459,11 @@ function fatoracao() {
                       aux.push(aws.direita[y].replace(/[a-z]/g, ''));
                       aws.direita[a] = aws.direita[a].replace(
                         /[A-Z]/g,
-                        `${aws.esquerda}'`
+                        `${aws.esquerda + rec}`
                       );
                       aws.direita[y] = aws.direita[y].replace(
                         /[A-Z]/g,
-                        `${aws.esquerda}'`
+                        `${aws.esquerda + rec}`
                       );
 
                       aux2.push(key);
@@ -475,9 +477,10 @@ function fatoracao() {
               }
               if (aux.length != 0) {
                 novaProducao[Object.keys(novaProducao).length] = {
-                  esquerda: `${aws.esquerda}'`,
+                  esquerda: `${aws.esquerda + rec}`,
                   direita: aux
                 };
+                rec += "'";
               }
             }
           }
